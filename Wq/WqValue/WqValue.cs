@@ -2,101 +2,83 @@
 
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using Wq.WqValue.Helpers;
 
-[StructLayout(LayoutKind.Explicit)]
 [SkipLocalsInit]
-[DebuggerDisplay("{ToDebugString}")]
+[DebuggerDisplay("{ToDebugString()}")]
 public readonly struct WqValue
 {
     public override bool Equals(object? obj) => obj is WqValue other && Equals(other);
-    public override int GetHashCode() => HashCode.Combine(_double, _string, _class, _sharpObject, (int)Type);
+    public override int GetHashCode() => Hash.GetHashCode();
 
-    public long Hash => WqValueHelper.Hash(_double, _sharpObject, Type);
+    public long Hash => WqValueHelper.Hash(_i64.As<long, double>(), _obj, Type);
 
-    private const int ValueOffset = 0;
-    private const int RefOffset = 8;
-    private const int TypeOffset = 16;
-    
     public static readonly WqValue Null = new();
 
 
-    [FieldOffset(ValueOffset)] private readonly bool _bool;
-    [FieldOffset(ValueOffset)] private readonly double _double;
-
-    [FieldOffset(RefOffset)] private readonly string _string;
-    [FieldOffset(RefOffset)] private readonly WqClass _class;
-    [FieldOffset(RefOffset)] private readonly WqFunc _func;
-    [FieldOffset(RefOffset)] private readonly object _sharpObject;
-
-    [FieldOffset(TypeOffset)] public readonly WqType Type;
+    private readonly long _i64;
+    private readonly object _obj;
+    public readonly WqType Type;
 
     public WqValue()
     {
-        WqValueHelper.Skip(out _double, out _string, out _class, out _sharpObject, out _bool, out _func);
-        _double = 0;
-        _sharpObject = null!;
+        _i64 = 0;
+        _obj = null!;
         Type = WqType.Null;
     }
 
     public WqValue(bool d)
     {
-        WqValueHelper.Skip(out _double, out _string, out _class, out _sharpObject, out _bool, out _func);
-        _bool = d;
-        _sharpObject = null!;
-        Type = WqType.Double;
+        _i64 = d.As<bool, long>();
+        _obj = null!;
+        Type = WqType.Bool;
     }
 
     public WqValue(double d)
     {
-        WqValueHelper.Skip(out _double, out _string, out _class, out _sharpObject, out _bool, out _func);
-        _double = d;
-        _sharpObject = null!;
+        _i64 = d.As<double, long>();
+        _obj = null!;
         Type = WqType.Double;
     }
 
     public WqValue(string s)
     {
-        WqValueHelper.Skip(out _double, out _string, out _class, out _sharpObject, out _bool, out _func);
-        _string = s;
-        _double = 0;
+        _obj = s;
+        _i64 = 0;
         Type = WqType.String;
     }
 
     public WqValue(object o)
     {
-        WqValueHelper.Skip(out _double, out _string, out _class, out _sharpObject, out _bool, out _func);
-        _sharpObject = o;
-        _double = 0;
+        _obj = o;
+        _i64 = 0;
+        Debug.Print("Object ctor used. It's not a mistake?");
         Type = WqType.SharpObject;
     }
 
     public WqValue(WqClass c)
     {
-        WqValueHelper.Skip(out _double, out _string, out _class, out _sharpObject, out _bool, out _func);
-        _class = c;
-        _double = 0;
+        _obj = c;
+        _i64 = 0;
         Type = WqType.Class;
     }
 
     public WqValue(WqFunc f)
     {
-        WqValueHelper.Skip(out _double, out _string, out _class, out _sharpObject, out _bool, out _func);
-        _func = f;
-        _double = 0;
+        _obj = f;
+        _i64 = 0;
         Type = WqType.Func;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public T Get<T>()
     {
-        if (typeof(T) == typeof(double) && Type == WqType.Double) return _double.As<double, T>();
-        if (typeof(T) == typeof(bool) && Type == WqType.Bool) return _bool.As<bool, T>();
-        if (typeof(T) == typeof(string) && Type == WqType.String) return _string.As<string, T>();
-        if (typeof(T) == typeof(object) && Type == WqType.SharpObject) return _sharpObject.As<object, T>();
-        if (typeof(T) == typeof(WqClass) && Type == WqType.Class) return _class.As<WqClass, T>();
-        if (typeof(T) == typeof(WqFunc) && Type == WqType.Func) return _func.As<WqFunc, T>();
+        if (typeof(T) == typeof(double) && Type == WqType.Double) return _i64.As<long, T>();
+        if (typeof(T) == typeof(bool) && Type == WqType.Bool) return _i64.As<long, T>();
+        if (typeof(T) == typeof(string) && Type == WqType.String) return (T)_obj;
+        if (typeof(T) == typeof(object) && Type == WqType.SharpObject) return (T)_obj;
+        if (typeof(T) == typeof(WqClass) && Type == WqType.Class) return (T)_obj;
+        if (typeof(T) == typeof(WqFunc) && Type == WqType.Func) return (T)_obj;
 
         return WqThrower.ThrowCannotGetType<T>(Type);
     }

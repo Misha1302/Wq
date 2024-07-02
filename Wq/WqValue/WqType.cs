@@ -2,13 +2,12 @@
 
 public enum WqType : long
 {
-    Null = 1,
+    Invalid,
+    Null,
     Double,
     String,
     Class,
     SharpObject,
     Bool,
-    Func,
-
-    Invalid = ~(Null | Double | String | SharpObject)
+    Func
 }
