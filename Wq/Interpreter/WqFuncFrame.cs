@@ -2,10 +2,12 @@ namespace Wq.Interpreter;
 
 using System.Buffers;
 using System.Diagnostics;
-using Wq.WqValue;
+using Wq.Value;
 
 public class WqFuncFrame(WqFuncDeclData declData, InterpreterData data) : IDisposable
 {
+    public int Ip;
+
     public readonly WqValue[] Locals = ArrayPool<WqValue>.Shared.Rent(declData.LocalsCount);
 
     private readonly int _startStackPointer = data.GlobalStack.StackPointer;

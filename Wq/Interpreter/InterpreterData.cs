@@ -2,7 +2,7 @@ namespace Wq.Interpreter;
 
 public class InterpreterData
 {
-    public int Ip;
+    public bool Halted;
     public readonly InterpreterStack GlobalStack = new(1024);
     public readonly FramesManager FramesManager;
     public readonly WqFuncDeclData[] FunctionDelcs;

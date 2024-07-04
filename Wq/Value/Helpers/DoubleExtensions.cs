@@ -1,4 +1,4 @@
-﻿namespace Wq.WqValue.Helpers;
+﻿namespace Wq.Value.Helpers;
 
 public static class DoubleExtensions
 {

@@ -1,4 +1,4 @@
-﻿namespace Wq.WqValue.Helpers;
+﻿namespace Wq.Value.Helpers;
 
 using System.Globalization;
 

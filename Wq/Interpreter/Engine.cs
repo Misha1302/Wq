@@ -1,6 +1,7 @@
 ﻿namespace Wq.Interpreter;
 
-using Wq.WqValue;
+using System.Diagnostics;
+using Wq.Value;
 
 public class Engine
 {
@@ -8,9 +9,14 @@ public class Engine
 
     private readonly List<Interpreter> _interpreters = [];
     private readonly List<WqValue> _results = [];
+    private LaunchMode _launchMode;
 
-    public List<WqValue> Start(WqFuncDeclData[] funcDeclData)
+    public List<WqValue> Start(WqFuncDeclData[] funcDeclData, LaunchMode launchMode = LaunchMode.Release)
     {
+        Debug.Assert(launchMode != LaunchMode.Invalid);
+
+        _launchMode = launchMode;
+
         Clear();
         AddInterpreter(new Interpreter(funcDeclData));
 
@@ -28,7 +34,7 @@ public class Engine
         for (var index = _interpreters.Count - 1; index >= 0; index--)
             if (_interpreters[index].Halted)
             {
-                _results.Add(_interpreters[index].LastValue);
+                _results.Add(_interpreters[index].LastWqValue);
                 _interpreters.RemoveAt(index);
             }
     }
@@ -41,6 +47,7 @@ public class Engine
 
     private void AddInterpreter(Interpreter interpreter)
     {
+        interpreter.LaunchMode = _launchMode;
         _interpreters.Add(interpreter);
     }
 

@@ -1,6 +1,6 @@
-﻿namespace Wq.WqValue;
+﻿namespace Wq.Value;
 
-using Wq.WqValue.Helpers;
+using Wq.Value.Helpers;
 
 public static class WqValueOperations
 {

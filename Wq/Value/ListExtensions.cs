@@ -1,4 +1,4 @@
-﻿namespace Wq.WqValue;
+﻿namespace Wq.Value;
 
 public static class ListExtensions
 {

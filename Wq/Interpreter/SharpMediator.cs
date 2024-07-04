@@ -1,6 +1,6 @@
 ﻿namespace Wq.Interpreter;
 
-using Wq.WqValue;
+using Wq.Value;
 
 public class SharpMediator(InterpreterData data)
 {

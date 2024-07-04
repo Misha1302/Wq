@@ -1,12 +1,12 @@
 namespace Wq.Interpreter;
 
 using Wq.Interpreter.Exceptions;
-using Wq.WqValue;
-using Wq.WqValue.Helpers;
+using Wq.Value;
+using Wq.Value.Helpers;
 
 public class InstructionExecutor(InterpreterData data)
 {
-    private Instruction CurInstr => data.Instructions[data.Ip];
+    private Instruction CurInstr => data.Instructions[data.FramesManager.CurFrame.Ip];
 
     public void ExecuteInstruction()
     {
@@ -139,25 +139,31 @@ public class InstructionExecutor(InterpreterData data)
                 throw new ArgumentOutOfRangeException();
         }
 
-        data.Ip++;
+        if (!data.Halted)
+            data.FramesManager.CurFrame.Ip++;
     }
 
     private void CallSharp()
     {
-        var result = data.SharpMediator.Call(CurInstr.Parameters[0].UnsafeGet<nint>(),
-            CurInstr.Parameters[1].UnsafeGet<int>());
+        var result = data.SharpMediator.Call(
+            CurInstr.Parameters[0].UnsafeGet<nint>(),
+            CurInstr.Parameters[1].UnsafeGet<int>()
+        );
         data.GlobalStack.Push(result);
     }
 
     private void Call()
     {
         data.FramesManager.AddFrame(data.FunctionDelcs[CurInstr.Parameters[0].UnsafeGet<int>()]);
+        data.FramesManager.CurFrame.Ip--;
     }
 
     private void Ret()
     {
         // no need to care about stack state. Automatically checks that in stack lies only one return value 
         data.FramesManager.ExitFrame();
+        if (!data.FramesManager.HasFrame)
+            data.Halted = true;
     }
 
     private void LoadLocal()
@@ -316,7 +322,7 @@ public class InstructionExecutor(InterpreterData data)
 
     private void Br()
     {
-        data.Ip = CurInstr.Parameters[0].Get<int>() - 1;
+        data.FramesManager.CurFrame.Ip = CurInstr.Parameters[0].Get<int>() - 1;
     }
 
     private void Dup()

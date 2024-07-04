@@ -1,4 +1,4 @@
-﻿namespace Wq.WqValue;
+﻿namespace Wq.Value;
 
 public class WqClass(int capacity, List<WqClass> parents)
 {
@@ -7,18 +7,16 @@ public class WqClass(int capacity, List<WqClass> parents)
     private readonly List<long> _hashes = new(capacity);
     private readonly List<WqValue> _values = new(capacity);
 
-    public WqClass() : this(DefaultCapacity, [])
-    {
-    }
+    public WqClass() : this(DefaultCapacity, []) { }
 
-    public void Add(WqValue key, WqValue value)
+    public void Add(WqValue key, WqValue wqValue)
     {
         var hashCode = key.Hash;
 
         _hashes.Add(hashCode);
         _hashes.Sort();
 
-        _values.Insert(_hashes.BinSearchRec(hashCode, 0, _hashes.Count), value);
+        _values.Insert(_hashes.BinSearchRec(hashCode, 0, _hashes.Count), wqValue);
     }
 
     public void Remove(WqValue key)
@@ -36,20 +34,20 @@ public class WqClass(int capacity, List<WqClass> parents)
         return result;
     }
 
-    public bool TryGet(WqValue key, out WqValue value, bool throwEx = false)
+    public bool TryGet(WqValue key, out WqValue wqValue, bool throwEx = false)
     {
         var ind = Index(key, out var instance, throwEx);
 
         if (ind < 0)
-            return CannotGet(out value);
+            return CannotGet(out wqValue);
 
-        value = instance._values[ind];
+        wqValue = instance._values[ind];
         return true;
     }
 
-    private static bool CannotGet(out WqValue value)
+    private static bool CannotGet(out WqValue wqValue)
     {
-        value = WqValue.Null;
+        wqValue = WqValue.Null;
         return false;
     }
 

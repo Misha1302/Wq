@@ -1,4 +1,4 @@
-﻿namespace Wq.WqValue.Helpers;
+﻿namespace Wq.Value.Helpers;
 
 using System.Runtime.CompilerServices;
 
@@ -25,6 +25,9 @@ public static class WqValueHelper
 
     public static bool BoolThisCall(string name, WqValue a, WqValue b) =>
         ThisCall(name, a, b).Get<bool>();
+
+    public static WqValue ThisCall(string name, WqValue a) =>
+        a.Get<WqClass>().Get(name).Get<WqFunc>().Call(a);
 
     public static WqValue ThisCall(string name, WqValue a, WqValue b) =>
         a.Get<WqClass>().Get(name).Get<WqFunc>().Call(a, b);

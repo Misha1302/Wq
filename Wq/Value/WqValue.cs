@@ -1,10 +1,9 @@
-﻿namespace Wq.WqValue;
+﻿namespace Wq.Value;
 
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using Wq.WqValue.Helpers;
+using Wq.Value.Helpers;
 
-[SkipLocalsInit]
 [DebuggerDisplay("{ToDebugString()}")]
 public readonly partial struct WqValue
 {
@@ -19,6 +18,7 @@ public readonly partial struct WqValue
     private readonly long _i64;
     private readonly object _obj;
     public readonly WqType Type;
+
 
     public WqValue()
     {
