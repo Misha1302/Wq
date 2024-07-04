@@ -2,6 +2,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using Wq.Interpreter;
 using Wq.Value;
 
 public static class WqThrower
@@ -34,4 +35,7 @@ public static class WqThrower
 
     public static T ThrowInvalidType<T>() =>
         Throw<T>("Value had invalid type");
+
+    public static T ThrowInvalidInstruction<T>(Instruction instruction)=>
+        Throw<T>($"Invalid instruction {instruction}");
 }

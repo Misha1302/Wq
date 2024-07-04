@@ -1,5 +1,6 @@
 namespace Wq.Interpreter;
 
+using System.Runtime.CompilerServices;
 using Wq.Interpreter.Exceptions;
 using Wq.Value;
 using Wq.Value.Helpers;
@@ -132,16 +133,30 @@ public class InstructionExecutor(InterpreterData data)
                 LoadLocal();
                 break;
             case InstructionType.IncLocal:
+                IncLocal();
                 break;
             case InstructionType.DecLocal:
+                DecLocal();
                 break;
             default:
-                throw new ArgumentOutOfRangeException();
+                WqThrower.ThrowInvalidInstruction<WqValue>(CurInstr);
+                break;
         }
 
         if (!data.Halted)
             data.FramesManager.CurFrame.Ip++;
     }
+
+    private void DecLocal()
+    {
+        data.FramesManager.CurFrame.Locals[CurInstr.Parameters[0].UnsafeGet<int>()]--;
+    }
+
+    private void IncLocal()
+    {
+        data.FramesManager.CurFrame.Locals[CurInstr.Parameters[0].UnsafeGet<int>()]++;
+    }
+
 
     private void CallSharp()
     {
@@ -152,11 +167,13 @@ public class InstructionExecutor(InterpreterData data)
         data.GlobalStack.Push(result);
     }
 
+
     private void Call()
     {
         data.FramesManager.AddFrame(data.FunctionDelcs[CurInstr.Parameters[0].UnsafeGet<int>()]);
         data.FramesManager.CurFrame.Ip--;
     }
+
 
     private void Ret()
     {
@@ -166,15 +183,18 @@ public class InstructionExecutor(InterpreterData data)
             data.Halted = true;
     }
 
+
     private void LoadLocal()
     {
         data.GlobalStack.Push(data.FramesManager.CurFrame.Locals[CurInstr.Parameters[0].UnsafeGet<int>()]);
     }
 
+
     private void SetLocal()
     {
         data.FramesManager.CurFrame.Locals[CurInstr.Parameters[0].UnsafeGet<int>()] = data.GlobalStack.Pop();
     }
+
 
     private void Gt()
     {
@@ -182,11 +202,13 @@ public class InstructionExecutor(InterpreterData data)
         data.GlobalStack.Push(WqValueComparer.Gt(a, b));
     }
 
+
     private void Ge()
     {
         var (a, b) = PopDouble();
         data.GlobalStack.Push(WqValueComparer.Ge(a, b));
     }
+
 
     private void Lt()
     {
@@ -194,11 +216,13 @@ public class InstructionExecutor(InterpreterData data)
         data.GlobalStack.Push(WqValueComparer.Lt(a, b));
     }
 
+
     private void Le()
     {
         var (a, b) = PopDouble();
         data.GlobalStack.Push(WqValueComparer.Le(a, b));
     }
+
 
     private void Eq()
     {
@@ -206,16 +230,19 @@ public class InstructionExecutor(InterpreterData data)
         data.GlobalStack.Push(WqValueComparer.Eq(a, b));
     }
 
+
     private void Neq()
     {
         var (a, b) = PopDouble();
         data.GlobalStack.Push(WqValueComparer.Neq(a, b));
     }
 
+
     private void Neg()
     {
         data.GlobalStack.Push(!data.GlobalStack.Pop().UnsafeGet<bool>());
     }
+
 
     private void Or()
     {
@@ -223,11 +250,13 @@ public class InstructionExecutor(InterpreterData data)
         data.GlobalStack.Push(a.UnsafeGet<bool>() || b.UnsafeGet<bool>());
     }
 
+
     private void And()
     {
         var (a, b) = PopDouble();
         data.GlobalStack.Push(a.UnsafeGet<bool>() && b.UnsafeGet<bool>());
     }
+
 
     private void Add()
     {
@@ -235,11 +264,13 @@ public class InstructionExecutor(InterpreterData data)
         data.GlobalStack.Push(WqValueOperations.Add(a, b));
     }
 
+
     private void Sub()
     {
         var (a, b) = PopDouble();
         data.GlobalStack.Push(WqValueOperations.Sub(a, b));
     }
+
 
     private void Mul()
     {
@@ -247,11 +278,13 @@ public class InstructionExecutor(InterpreterData data)
         data.GlobalStack.Push(WqValueOperations.Mul(a, b));
     }
 
+
     private void Div()
     {
         var (a, b) = PopDouble();
         data.GlobalStack.Push(WqValueOperations.Div(a, b));
     }
+
 
     private void Pow()
     {
@@ -259,11 +292,13 @@ public class InstructionExecutor(InterpreterData data)
         data.GlobalStack.Push(WqValueOperations.Pow(a, b));
     }
 
+
     private void Rem()
     {
         var (a, b) = PopDouble();
         data.GlobalStack.Push(WqValueOperations.Rem(a, b));
     }
+
 
     private void BrGt()
     {
@@ -271,6 +306,7 @@ public class InstructionExecutor(InterpreterData data)
         if (WqValueComparer.Gt(a, b)) Br();
     }
 
+    
     private (WqValue a, WqValue b) PopDouble()
     {
         var b = data.GlobalStack.Pop();
@@ -278,11 +314,13 @@ public class InstructionExecutor(InterpreterData data)
         return (a, b);
     }
 
+
     private void BrGe()
     {
         var (a, b) = PopDouble();
         if (WqValueComparer.Ge(a, b)) Br();
     }
+
 
     private void BrLt()
     {
@@ -290,11 +328,13 @@ public class InstructionExecutor(InterpreterData data)
         if (WqValueComparer.Lt(a, b)) Br();
     }
 
+
     private void BrLe()
     {
         var (a, b) = PopDouble();
         if (WqValueComparer.Le(a, b)) Br();
     }
+
 
     private void BrEq()
     {
@@ -302,11 +342,13 @@ public class InstructionExecutor(InterpreterData data)
         if (WqValueComparer.Eq(a, b)) Br();
     }
 
+
     private void BrNeq()
     {
         var (a, b) = PopDouble();
         if (WqValueComparer.Neq(a, b)) Br();
     }
+
 
     private void BrTrue()
     {
@@ -314,31 +356,37 @@ public class InstructionExecutor(InterpreterData data)
             Br();
     }
 
+
     private void BrFalse()
     {
         if (!data.GlobalStack.Pop().Get<bool>())
             Br();
     }
 
+
     private void Br()
     {
         data.FramesManager.CurFrame.Ip = CurInstr.Parameters[0].UnsafeGet<int>() - 1;
     }
+
 
     private void Dup()
     {
         data.GlobalStack.Dup();
     }
 
+
     private void Drop()
     {
         data.GlobalStack.Drop();
     }
 
+
     private void PushConst()
     {
         data.GlobalStack.Push(CurInstr.Parameters[0]);
     }
+
 
     private void InvalidInstruction()
     {

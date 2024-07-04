@@ -2,17 +2,10 @@
 
 using Wq.Value;
 
-public class Interpreter
+public class Interpreter(WqFuncDeclData[] functionDelcs)
 {
-    private readonly InterpreterData _data;
-    private readonly InstructionExecutor _instructionExecutor;
+    private readonly InterpreterData _data = new(functionDelcs);
     public LaunchMode LaunchMode;
-
-    public Interpreter(WqFuncDeclData[] functionDelcs)
-    {
-        _data = new InterpreterData(functionDelcs);
-        _instructionExecutor = new InstructionExecutor(_data);
-    }
 
 
     public bool Halted => _data.Halted;
@@ -22,8 +15,11 @@ public class Interpreter
     {
         for (var i = 0; i < stepsCount; i++)
         {
-            var instruction = _data.Instructions[_data.FramesManager.CurFrame.Ip];
-            _instructionExecutor.ExecuteInstruction();
+            var instruction = LaunchMode == LaunchMode.Debug
+                ? _data.Instructions[_data.FramesManager.CurFrame.Ip]
+                : null!;
+
+            _data.InstructionExecutor.ExecuteInstruction();
 
             if (LaunchMode == LaunchMode.Debug)
                 PrintState(instruction);
@@ -41,7 +37,7 @@ public class Interpreter
         Console.WriteLine(
             !_data.Halted
                 ? $"{i} -> {_data.FramesManager.CurFrame.Ip} -> [{string.Join(", ", _data.GlobalStack)}]"
-                : "Halted"
+                : $"Halted -> [{string.Join(", ", _data.GlobalStack)}]"
         );
     }
 }

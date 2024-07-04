@@ -7,12 +7,13 @@ public class FastStack<T>(int size) : IEnumerable<T>
     public int StackPointer;
 
     private readonly T[] _array = new T[size];
+    public bool IsEmpty => StackPointer == 0;
 
     public IEnumerator<T> GetEnumerator() => _array[..StackPointer].ToList().GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
 
-    public void Push(T T) => _array[StackPointer++] = T;
+    public void Push(T value) => _array[StackPointer++] = value;
 
     public T Pop() => _array[--StackPointer];
 
