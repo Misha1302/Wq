@@ -85,4 +85,15 @@ public static class WqValueOperations
             return span.ToString();
         }
     }
+
+    public static WqValue Rem(WqValue a, WqValue b)
+    {
+        if (a.Type == b.Type && a.Type == WqType.Double)
+            return new WqValue(a.Get<double>() % b.Get<double>());
+
+        if (a.Type == WqType.Class)
+            return WqValueHelper.ThisCall("__rem__", a, b);
+
+        return WqThrower.CannotOperateTypes<WqValue>(a.Type, b.Type);
+    }
 }

@@ -1,9 +1,18 @@
 ﻿namespace Wq;
 
+using Wq.Interpreter;
+
 public static class Program
 {
     public static void Main(string[] args)
     {
-        Console.WriteLine(new WqValue.WqValue(54) == new WqValue.WqValue(3.43) == new WqValue.WqValue(false));
+        var funcDeclData = new WqFuncDeclData([
+            new Instruction(InstructionType.PushConst, [123.123], []),
+            new Instruction(InstructionType.PushConst, [125.125], []),
+            new Instruction(InstructionType.Pow, [], [])
+        ]);
+
+        var results = new Engine().Start([funcDeclData]);
+        Console.WriteLine(string.Join(", ", results));
     }
 }

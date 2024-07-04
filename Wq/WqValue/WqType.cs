@@ -9,5 +9,6 @@ public enum WqType : long
     Class,
     SharpObject,
     Bool,
-    Func
+    Func,
+    Internal
 }

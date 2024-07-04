@@ -6,7 +6,7 @@ using Wq.WqValue.Helpers;
 
 [SkipLocalsInit]
 [DebuggerDisplay("{ToDebugString()}")]
-public readonly struct WqValue
+public readonly partial struct WqValue
 {
     public override bool Equals(object? obj) => obj is WqValue other && Equals(other);
     public override int GetHashCode() => Hash.GetHashCode();
@@ -81,6 +81,14 @@ public readonly struct WqValue
         if (typeof(T) == typeof(WqFunc) && Type == WqType.Func) return (T)_obj;
 
         return WqThrower.ThrowCannotGetType<T>(Type);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public T UnsafeGet<T>()
+    {
+        if (typeof(T).IsValueType)
+            return _i64.As<long, T>();
+        return (T)_obj;
     }
 
     public string ToDebugString() => WqValueFormatter.ToDebugString(this);
