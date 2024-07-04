@@ -322,7 +322,7 @@ public class InstructionExecutor(InterpreterData data)
 
     private void Br()
     {
-        data.FramesManager.CurFrame.Ip = CurInstr.Parameters[0].Get<int>() - 1;
+        data.FramesManager.CurFrame.Ip = CurInstr.Parameters[0].UnsafeGet<int>() - 1;
     }
 
     private void Dup()
