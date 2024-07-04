@@ -10,6 +10,7 @@ public static class Program
     {
         var i = WqValue.Int(0);
         const int top = 10_000_000;
+        // const int top = 100_000;
 
         var main = new WqFuncDeclData("main",
         [

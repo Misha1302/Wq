@@ -1,9 +1,11 @@
 namespace Wq.Interpreter;
 
+using Wq.Value;
+
 public class InterpreterData
 {
     public bool Halted;
-    public readonly InterpreterStack GlobalStack = new(1024);
+    public readonly FastStack<WqValue> GlobalStack = new(1024);
     public readonly FramesManager FramesManager;
     public readonly WqFuncDeclData[] FunctionDelcs;
     public readonly SharpMediator SharpMediator;
