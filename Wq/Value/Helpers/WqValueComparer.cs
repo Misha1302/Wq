@@ -52,7 +52,7 @@ public static class WqValueComparer
         if (a.Type == b.Type)
         {
             if (a.Type == WqType.Double)
-                return a.Get<double>() <= b.Get<double>() || a == b;
+                return a.Get<double>() <= b.Get<double>() || a.Get<double>().EqAprx(b.Get<double>());
             if (a.Type == WqType.Class)
                 return WqValueHelper.BoolThisCall("__le__", a, b);
         }
@@ -65,7 +65,7 @@ public static class WqValueComparer
         if (a.Type == b.Type)
         {
             if (a.Type == WqType.Double)
-                return a.Get<double>() >= b.Get<double>() || a == b;
+                return a.Get<double>() >= b.Get<double>() || a.Get<double>().EqAprx(b.Get<double>());
             if (a.Type == WqType.Class)
                 return WqValueHelper.BoolThisCall("__ge__", a, b);
         }

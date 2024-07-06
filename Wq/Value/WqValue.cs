@@ -70,7 +70,7 @@ public readonly partial struct WqValue
         Type = WqType.Func;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public T Get<T>()
     {
         if (typeof(T) == typeof(double) && Type == WqType.Double) return _i64.As<long, T>();

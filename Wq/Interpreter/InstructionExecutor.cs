@@ -9,6 +9,7 @@ public class InstructionExecutor(InterpreterData data)
 {
     private Instruction CurInstr => data.Instructions[data.FramesManager.CurFrame.Ip];
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public void ExecuteInstruction()
     {
         switch (CurInstr.InstructionType)
@@ -306,7 +307,7 @@ public class InstructionExecutor(InterpreterData data)
         if (WqValueComparer.Gt(a, b)) Br();
     }
 
-    
+
     private (WqValue a, WqValue b) PopDouble()
     {
         var b = data.GlobalStack.Pop();

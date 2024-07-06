@@ -3,23 +3,31 @@
 public class FramesManager(InterpreterData data)
 {
     private readonly FastStack<WqFuncFrame> _frames = new(128);
+    private readonly Pool<WqFuncFrame> _pool = MakeFramesPool();
 
-    private readonly FramesPool _framesPool = new(1024);
     public WqFuncFrame CurFrame { get; private set; } = null!;
     public bool HasFrame => !_frames.IsEmpty;
+
+    private static Pool<WqFuncFrame> MakeFramesPool()
+    {
+        var arrayPool = new WqFuncFrameArrayPool();
+        return new Pool<WqFuncFrame>(1024, () => new WqFuncFrame(arrayPool));
+    }
+
 
     public void ExitFrame()
     {
         CurFrame.Dispose();
-        _framesPool.Return(CurFrame);
+        _pool.Return(CurFrame);
         _frames.Drop();
         SetCurFrame();
     }
 
     public void AddFrame(WqFuncDeclData funcDeclData)
     {
-        _frames.Push(_framesPool.Rent(funcDeclData, data));
+        _frames.Push(_pool.Rent());
         SetCurFrame();
+        CurFrame.Init(funcDeclData, data);
     }
 
     private void SetCurFrame()

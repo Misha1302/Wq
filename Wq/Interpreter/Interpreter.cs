@@ -1,5 +1,6 @@
 ﻿namespace Wq.Interpreter;
 
+using System.Runtime.CompilerServices;
 using Wq.Value;
 
 public class Interpreter(WqFuncDeclData[] functionDelcs)
@@ -11,6 +12,7 @@ public class Interpreter(WqFuncDeclData[] functionDelcs)
     public bool Halted => _data.Halted;
     public WqValue LastWqValue => _data.GlobalStack.Peek();
 
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     public void Step(int stepsCount)
     {
         for (var i = 0; i < stepsCount; i++)

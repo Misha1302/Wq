@@ -1,6 +1,5 @@
 namespace Wq.Interpreter;
 
-using System.Runtime.CompilerServices;
 using Wq.Value;
 
 public class InterpreterData
@@ -17,8 +16,8 @@ public class InterpreterData
     {
         FunctionDelcs = functionDelcs;
         SharpMediator = new SharpMediator(this);
-        InstructionExecutor = new InstructionExecutor(this);
         FramesManager = new FramesManager(this);
+        InstructionExecutor = new InstructionExecutor(this);
 
         FramesManager.AddFrame(functionDelcs[0]);
     }
